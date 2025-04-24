@@ -12,6 +12,12 @@ jobs:
     needs: get_version
 
     steps:
+      - name: Debug - mostrar tag recibido desde reusable workflow
+        run: |
+          echo "📦 Tag recibido desde reusable workflow: '${{ needs.get_version.outputs.full_tag }}'"
+        shell: bash
+    
+
       - name: Login to Docker registry
         id: login_docker
         run: |
@@ -26,7 +32,7 @@ jobs:
         id: build_image
         run: |
           echo "Building Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
-          docker build -t ${{ needs.get_version.outputs.full_tag }} .
+          # docker build -t ${{ needs.get_version.outputs.full_tag }} .
         shell: bash
 
       - name: Show list of images

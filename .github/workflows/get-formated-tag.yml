@@ -44,3 +44,10 @@ jobs:
         with:
           image_name: "${{ env.PRE_APP_NAME }}${{ steps.get_data.outputs.APP_NAME }}"
           version: ${{ steps.get_data.outputs.VERSION }}
+
+      - name: Set output
+        id: set_output
+        run: |
+          echo "full_docker_tag=${{ steps.tagger.outputs.full_image_name }}" >> $GITHUB_OUTPUT
+          echo "full_docker_tag=${{ steps.tagger.outputs.full_image_name }}"
+        shell: bash
