@@ -26,7 +26,14 @@ jobs:
         id: build_image
         run: |
           echo "Building Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
-          # docker build -t ${{ needs.get_version.outputs.full_tag }} .
+          docker build -t ${{ needs.get_version.outputs.full_tag }} .
+        shell: bash
+
+      - name: Show list of images
+        id: list_images
+        run: |
+          echo "Listing Docker images"
+          docker images
         shell: bash
 
       - name: Push Docker image
