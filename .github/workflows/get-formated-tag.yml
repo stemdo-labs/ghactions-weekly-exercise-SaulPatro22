@@ -1,0 +1,34 @@
+name: Get package full tag to docker build
+on: 
+  workflow_call:
+    outputs:
+      full_tag:
+        description: 'Full tag to use on a docker build'
+        value: ${{ jobs.get_tag_docker.outputs.full_docker_tag }}
+
+jobs:
+  get_tag_docker:
+    runs-on: [self-hosted, labs-runner]
+    outputs:
+      full_docker_tag: ${{ steps.tagger.outputs.full_docker_tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version and name from package.json
+        id: get_data
+        run: |
+          echo "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
+          echo "APP_NAME=$(sed -n 's/.*"name": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
+
+      - name: Get full image name
+        uses: ./.github/actions/get-tag-docker-action
+        id: tagger
+        with:
+          image_name: ${{ steps.get_data.outputs.APP_NAME }}
+          version: ${{ steps.get_data.outputs.VERSION }}
+
+      # - name: Set output with full image name
+      #   id: set_output
+      #   run: echo "full_docker_tag=${{ steps.tagger.outputs.full_image_name }}" >> $GITHUB_OUTPUT

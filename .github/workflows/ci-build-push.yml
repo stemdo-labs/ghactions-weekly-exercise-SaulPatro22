@@ -1,22 +1,34 @@
-on: workflow_dispatch
+on: [push,workflow_dispatch]
 
 jobs:
   build:
     runs-on: [self-hosted, labs-runner]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
 
       - name: Get version from package.json
         id: get_version
-        uses: ./.github/workflows/get-package-version
+        uses: ./.github/workflows/get-formated-tag.yml
 
-      - name: Get full image name
-        uses: ./.github/actions/tagger-docker-action
-        id: tagger
-        with:
-          image_name: "my-angular-app"
-          version: ${{ steps.get_version.outputs.version }}
-      
       - name: Build Docker image
+        id: build_image
+        run: |
+          echo "Building Docker image with tag: ${{ steps.get_version.outputs.full_tag }}"
+          # docker build -t ${{ steps.get_version.outputs.full_tag }} .
+        shell: bash
+
+      - name: Login to Docker registry
+        id: login_docker
+        run: |
+          echo "Logging in to Docker registry"
+          # docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        shell: bash
+
+      - name: Push Docker image
+        id: push_image
+        run: |
+          echo "Pushing Docker image with tag: ${{ steps.get_version.outputs.full_tag }}"
+          # docker push ${{ steps.get_version.outputs.full_tag }}
+        shell: bash
