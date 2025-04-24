@@ -1,0 +1,22 @@
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: [self-hosted, labs-runner]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from package.json
+        id: get_version
+        uses: ./.github/workflows/get-package-version
+
+      - name: Get full image name
+        uses: ./.github/actions/tagger-docker-action
+        id: tagger
+        with:
+          image_name: "my-angular-app"
+          version: ${{ steps.get_version.outputs.version }}
+      
+      - name: Build Docker image
