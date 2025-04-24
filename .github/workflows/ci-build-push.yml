@@ -1,8 +1,11 @@
+name: Build and Push Docker Image
 on: [push,workflow_dispatch]
 
 jobs:
   get_version:
     uses: ./.github/workflows/get-formated-tag.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
   build:
     runs-on: [self-hosted, labs-runner]
