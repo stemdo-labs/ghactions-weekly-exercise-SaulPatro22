@@ -35,3 +35,12 @@ jobs:
           echo "Pushing Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
           # docker push ${{ needs.get_version.outputs.full_tag }}
         shell: bash
+
+      - name: Is Valid
+        run: |
+          echo "${{ needs.get_version.outputs.full_tag }}"
+          if [[ "${{ needs.get_version.outputs.full_tag }}" == 'spatrocinio/sample-angular-app:0.0.0' ]]; then
+            echo "Valid"
+          else
+            echo "Invalid"
+          fi
