@@ -22,4 +22,6 @@ runs:
     - name: formating image name
       id: retag
       shell: bash
-      run: echo "full_image_name=spatrocinio/${{ inputs.image_name }}:${{ inputs.version }}" >> $GITHUB_OUTPUT
+      run: |
+        echo "full_image_name=spatrocinio/${{ inputs.image_name }}:${{ inputs.version }}" >> $GITHUB_OUTPUT
+        echo "Full image name: spatrocinio/${{ inputs.image_name }}:${{ inputs.version }}"

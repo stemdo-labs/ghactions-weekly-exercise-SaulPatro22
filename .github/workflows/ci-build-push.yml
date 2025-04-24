@@ -1,24 +1,14 @@
 on: [push,workflow_dispatch]
 
 jobs:
+  get_version:
+    uses: ./.github/workflows/get-formated-tag.yml
+
   build:
     runs-on: [self-hosted, labs-runner]
+    needs: get_version
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v4
-
-      - name: Get version from package.json
-        id: get_version
-        uses: ./.github/workflows/get-formated-tag.yml
-
-      - name: Build Docker image
-        id: build_image
-        run: |
-          echo "Building Docker image with tag: ${{ steps.get_version.outputs.full_tag }}"
-          # docker build -t ${{ steps.get_version.outputs.full_tag }} .
-        shell: bash
-
       - name: Login to Docker registry
         id: login_docker
         run: |
@@ -26,9 +16,19 @@ jobs:
           # docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         shell: bash
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        id: build_image
+        run: |
+          echo "Building Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
+          # docker build -t ${{ needs.get_version.outputs.full_tag }} .
+        shell: bash
+
       - name: Push Docker image
         id: push_image
         run: |
-          echo "Pushing Docker image with tag: ${{ steps.get_version.outputs.full_tag }}"
-          # docker push ${{ steps.get_version.outputs.full_tag }}
+          echo "Pushing Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
+          # docker push ${{ needs.get_version.outputs.full_tag }}
         shell: bash
