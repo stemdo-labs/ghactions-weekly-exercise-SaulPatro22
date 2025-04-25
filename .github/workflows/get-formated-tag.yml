@@ -1,8 +1,9 @@
 name: Get package full tag to docker build
 on: 
   workflow_call:
-    secrets:
+    inputs:
       DOCKER_USERNAME:
+        type: string
         description: 'The name of the docker username. Must include the final /'
         required: false
 
@@ -30,8 +31,8 @@ jobs:
 
       - name: Set pre app name
         run: |
-          if [ -n "${{ secrets.DOCKER_USERNAME }}" ]; then
-            pre_app="${{ secrets.DOCKER_USERNAME }}"
+          if [ -n "${{ inputs.DOCKER_USERNAME }}" ]; then
+            pre_app="${{ inputs.DOCKER_USERNAME }}"
             [[ "$pre_app" != */ ]] && pre_app="${pre_app}/"
             echo "PRE_APP_NAME=$pre_app" >> $GITHUB_ENV
           else

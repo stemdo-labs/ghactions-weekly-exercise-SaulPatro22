@@ -4,8 +4,8 @@ on: [push,workflow_dispatch]
 jobs:
   get_version:
     uses: ./.github/workflows/get-formated-tag.yml
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+    with:
+      DOCKER_USERNAME: "${{ vars.DOCKER_USERNAME }}"
 
   build:
     runs-on: [self-hosted, labs-runner]
@@ -22,7 +22,7 @@ jobs:
         id: login_docker
         run: |
           echo "Logging in to Docker registry"
-          # docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          # docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
         shell: bash
 
       - name: Checkout repository
