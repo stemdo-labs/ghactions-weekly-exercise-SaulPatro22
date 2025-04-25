@@ -39,7 +39,7 @@ jobs:
         id: run_container
         run: |
           echo "Running Docker container with tag: ${{ needs.get_version.outputs.full_tag }}"
-          docker run -d ${{ needs.get_version.outputs.full_tag }} -p 8022:8080
+          docker run -d -p 8022:8080 ${{ needs.get_version.outputs.full_tag }}
         shell: bash
 
       - name: Check with curl nginx
