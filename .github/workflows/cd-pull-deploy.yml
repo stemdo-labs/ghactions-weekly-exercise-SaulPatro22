@@ -1,8 +1,8 @@
 on:
-  workflow_dispatch:
   workflow_run:
     workflows: ["Build and Push Docker Image"]
     types: [completed]
+    branches: [main, development]
 
 
 jobs:
