@@ -1,0 +1,26 @@
+name: 'Formating tag Docker Image'
+description: 'Will create a full name of the docker image with the new tag'
+
+inputs:
+  image_name:
+    required: true
+    description: 'The name of the docker image. This should include the registry and repository if needed'
+  
+  version:
+    required: true
+    description: 'The version of the docker image'
+
+outputs:
+  full_image_name:
+    description: 'The full name of the docker image with the new tag'
+    value: ${{ steps.retag.outputs.full_image_name }}
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: formating image name
+      id: retag
+      shell: bash
+      run: |
+        echo "full_image_name=${{ inputs.image_name }}:${{ inputs.version }}" >> $GITHUB_OUTPUT

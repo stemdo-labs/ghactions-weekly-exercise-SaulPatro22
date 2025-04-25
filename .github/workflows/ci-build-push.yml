@@ -1,0 +1,51 @@
+name: Build and Push Docker Image
+on: [push,workflow_dispatch]
+
+jobs:
+  get_version:
+    uses: ./.github/workflows/get-formated-tag.yml
+    with:
+      DOCKER_USERNAME: "${{ vars.DOCKER_USERNAME }}"
+
+  build:
+    runs-on: [self-hosted, virtualbox]
+    needs: get_version
+
+    steps:
+      - name: Login to Docker registry
+        id: login_docker
+        run: |
+          echo "Logging in to Docker registry"
+          docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+        shell: bash
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        id: build_image
+        run: |
+          echo "Building Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
+          docker build -t ${{ needs.get_version.outputs.full_tag }} .
+        shell: bash
+
+      - name: Show list of images
+        id: list_images
+        run: |
+          echo "Listing Docker images"
+          docker images
+        shell: bash
+
+      - name: Push Docker image
+        id: push_image
+        run: |
+          echo "Pushing Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
+          docker push ${{ needs.get_version.outputs.full_tag }}
+        shell: bash
+
+      - name: Logout from Docker
+        if: always()
+        run: |
+          echo "Logging out from Docker registry"
+          docker logout
+        shell: bash

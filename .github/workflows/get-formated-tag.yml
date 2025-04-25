@@ -1,0 +1,54 @@
+name: Get package full tag to docker build
+on: 
+  workflow_call:
+    inputs:
+      DOCKER_USERNAME:
+        type: string
+        description: 'The name of the docker username. Must include the final /'
+        required: false
+
+    outputs:
+      full_tag:
+        description: 'Full tag to use on a docker build'
+        value: ${{ jobs.get_tag_docker.outputs.full_docker_tag }}
+
+jobs:
+  get_tag_docker:
+    runs-on: [self-hosted, virtualbox]
+    outputs:
+      full_docker_tag: ${{ steps.tagger.outputs.full_image_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version and name from package.json
+        id: get_data
+        run: |
+          echo "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
+          echo "APP_NAME=$(sed -n 's/.*"name": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Set pre app name
+        run: |
+          if [ -n "${{ inputs.DOCKER_USERNAME }}" ]; then
+            pre_app="${{ inputs.DOCKER_USERNAME }}"
+            [[ "$pre_app" != */ ]] && pre_app="${pre_app}/"
+            echo "PRE_APP_NAME=$pre_app" >> $GITHUB_ENV
+          else
+            echo "PRE_APP_NAME=" >> $GITHUB_ENV
+          fi
+
+      - name: Get full image name
+        uses: ./.github/actions/get-tag-docker-action
+        id: tagger
+        with:
+          image_name: "${{ env.PRE_APP_NAME }}${{ steps.get_data.outputs.APP_NAME }}"
+          version: ${{ steps.get_data.outputs.VERSION }}
+
+      - name: Set output
+        id: set_output
+        run: |
+          echo "full_docker_tag=${{ steps.tagger.outputs.full_image_name }}" >> $GITHUB_OUTPUT
+          echo "full_docker_tag=${{ steps.tagger.outputs.full_image_name }}"
+        shell: bash

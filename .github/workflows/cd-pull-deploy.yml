@@ -1,0 +1,47 @@
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types: [completed]
+    # branches: ['**']
+
+
+jobs:
+  build:
+    runs-on: [self-hosted, virtualbox]
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Get version from package.json
+        id: get_version
+        uses: ./.github/workflows/get-formated-tag.yml
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker registry
+        id: login_docker
+        run: |
+          echo "Logging in to Docker registry"
+          docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+        shell: bash
+
+      - name: Pull Docker image
+        id: pull_image
+        run: |
+          echo "Pulling Docker image with tag: ${{ steps.get_version.outputs.full_tag }}"
+          docker pull ${{ steps.get_version.outputs.full_tag }}
+        shell: bash
+
+      - name: Run Docker container
+        id: run_container
+        run: |
+          echo "Running Docker container with tag: ${{ steps.get_version.outputs.full_tag }}"
+          docker run -d --name my_container ${{ steps.get_version.outputs.full_tag }} -p 80:8080
+        shell: bash
+
+      - name: Check with curl nginx
+        id: check_nginx
+        run: |
+          echo "Checking if nginx is running"
+          curl -I http://localhost:80
+        shell: bash
