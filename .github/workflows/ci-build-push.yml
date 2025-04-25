@@ -8,7 +8,7 @@ jobs:
       DOCKER_USERNAME: "${{ vars.DOCKER_USERNAME }}"
 
   build:
-    runs-on: [self-hosted, labs-runner]
+    runs-on: [self-hosted, virtualbox]
     needs: get_version
 
     steps:

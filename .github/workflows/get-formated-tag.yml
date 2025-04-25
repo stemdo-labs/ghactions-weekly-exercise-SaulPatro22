@@ -14,7 +14,7 @@ on:
 
 jobs:
   get_tag_docker:
-    runs-on: [self-hosted, labs-runner]
+    runs-on: [self-hosted, virtualbox]
     outputs:
       full_docker_tag: ${{ steps.tagger.outputs.full_image_name }}
 

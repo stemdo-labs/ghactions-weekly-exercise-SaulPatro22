@@ -1,13 +1,13 @@
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [Build and Push Docker Image]
+    workflows: ["Build and Push Docker Image"]
     types: [completed]
 
 
 jobs:
   build:
-    runs-on: [self-hosted, labs-runner]
+    runs-on: [self-hosted, virtualbox]
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
