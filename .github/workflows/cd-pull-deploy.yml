@@ -1,3 +1,4 @@
+name: Pull and Deploy Docker Image
 on:
   workflow_run:
     workflows: ["Build and Push Docker Image"]
@@ -6,18 +7,17 @@ on:
 
 
 jobs:
-  build:
+  get_version:
+    uses: ./.github/workflows/get-formated-tag.yml
+    with:
+      DOCKER_USERNAME: "${{ vars.DOCKER_USERNAME }}"
+
+  deploy:
     runs-on: [self-hosted, virtualbox]
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: get_version
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - name: Get version from package.json
-        id: get_version
-        uses: ./.github/workflows/get-formated-tag.yml
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Login to Docker registry
         id: login_docker
         run: |
@@ -25,18 +25,21 @@ jobs:
           docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
         shell: bash
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Pull Docker image
         id: pull_image
         run: |
-          echo "Pulling Docker image with tag: ${{ steps.get_version.outputs.full_tag }}"
-          docker pull ${{ steps.get_version.outputs.full_tag }}
+          echo "Pulling Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
+          docker pull ${{ needs.get_version.outputs.full_tag }}
         shell: bash
 
       - name: Run Docker container
         id: run_container
         run: |
-          echo "Running Docker container with tag: ${{ steps.get_version.outputs.full_tag }}"
-          docker run -d --name my_container ${{ steps.get_version.outputs.full_tag }} -p 80:8080
+          echo "Running Docker container with tag: ${{ needs.get_version.outputs.full_tag }}"
+          docker run -d --name my_container ${{ needs.get_version.outputs.full_tag }} -p 80:8080
         shell: bash
 
       - name: Check with curl nginx
