@@ -40,6 +40,12 @@ jobs:
         id: push_image
         run: |
           echo "Pushing Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
-          # docker push ${{ needs.get_version.outputs.full_tag }}
+          docker push ${{ needs.get_version.outputs.full_tag }}
+        shell: bash
+
+      - name: Logout from Docker
+        if: always()
+        run: |
+          echo "Logging out from Docker registry"
           docker logout
         shell: bash
