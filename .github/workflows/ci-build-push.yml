@@ -12,17 +12,11 @@ jobs:
     needs: get_version
 
     steps:
-      - name: Debug - mostrar tag recibido desde reusable workflow
-        run: |
-          echo "📦 Tag recibido desde reusable workflow: '${{ needs.get_version.outputs.full_tag }}'"
-        shell: bash
-    
-
       - name: Login to Docker registry
         id: login_docker
         run: |
           echo "Logging in to Docker registry"
-          # docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+          docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
         shell: bash
 
       - name: Checkout repository
@@ -47,13 +41,5 @@ jobs:
         run: |
           echo "Pushing Docker image with tag: ${{ needs.get_version.outputs.full_tag }}"
           # docker push ${{ needs.get_version.outputs.full_tag }}
+          docker logout
         shell: bash
-
-      - name: Is Valid
-        run: |
-          echo "${{ needs.get_version.outputs.full_tag }}"
-          if [[ "${{ needs.get_version.outputs.full_tag }}" == 'spatrocinio/sample-angular-app:0.0.0' ]]; then
-            echo "Valid"
-          else
-            echo "Invalid"
-          fi
