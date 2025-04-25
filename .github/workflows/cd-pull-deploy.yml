@@ -39,12 +39,20 @@ jobs:
         id: run_container
         run: |
           echo "Running Docker container with tag: ${{ needs.get_version.outputs.full_tag }}"
-          docker run -d --name my_container ${{ needs.get_version.outputs.full_tag }} -p 8080:80
+          docker run -d ${{ needs.get_version.outputs.full_tag }} -p 8080:80
         shell: bash
 
       - name: Check with curl nginx
         id: check_nginx
         run: |
           echo "Checking if nginx is running"
+          for i in {1..10}; do curl -I http://localhost:80 && break || sleep 5; done
           curl -I http://localhost:80
+        shell: bash
+
+      - name: Logout from Docker
+        if: always()
+        run: |
+          echo "Logging out from Docker registry"
+          docker logout
         shell: bash
