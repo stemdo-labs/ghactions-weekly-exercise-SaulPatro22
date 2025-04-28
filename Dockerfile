@@ -1,5 +1,5 @@
 # Stage 1: Compile and Build angular codebase
-FROM node AS build
+FROM node:23-slim AS build
 WORKDIR /app
 COPY package*.json /app/
 RUN npm install

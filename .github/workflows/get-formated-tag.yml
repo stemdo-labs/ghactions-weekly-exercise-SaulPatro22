@@ -25,8 +25,12 @@ jobs:
       - name: Get version and name from package.json
         id: get_data
         run: |
-          echo "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
-          echo "APP_NAME=$(sed -n 's/.*"name": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
+          echo "APP_NAME=${{ vars.DOCKER_REPO }}" >> $GITHUB_OUTPUT
+          if [ "${{ github.base_ref }}" == 'main' ]; then
+            echo "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)-RC" >> $GITHUB_OUTPUT
+          else
+            "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)-SNAPSHOT" >> $GITHUB_OUTPUT
+          fi
         shell: bash
 
       - name: Set pre app name

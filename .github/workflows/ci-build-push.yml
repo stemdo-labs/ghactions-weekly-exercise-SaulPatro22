@@ -1,5 +1,8 @@
 name: Build and Push Docker Image
-on: [push,workflow_dispatch]
+on: 
+  push:
+    branches: [main, development]
+  workflow_dispatch:
 
 jobs:
   get_version:
@@ -56,3 +59,9 @@ jobs:
           echo "Logging out from Docker registry"
           docker logout
         shell: bash
+
+
+  run_tests:
+    uses: ./.github/workflows/run-tests.yml
+    needs: build
+    if: ${{ needs.build.result == 'success' && github.ref == 'refs/heads/development' }}
