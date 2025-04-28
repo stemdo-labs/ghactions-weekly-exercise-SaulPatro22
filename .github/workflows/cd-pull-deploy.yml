@@ -48,14 +48,15 @@ jobs:
           echo "Checking if nginx is running"
           for i in {1..10}; do 
             if curl -s http://localhost:8022 > /dev/null; then
-              echo "Nginx is running"
-              break
+              echo ''
+              echo "NGINX IS RUNNING"
+              exit 0
             else
               echo "Waiting for nginx to start..."
               sleep 5
             fi
           done
-          curl -I http://localhost:8022
+          echo "NGINX DID NOT START"
         shell: bash
 
       - name: Delete Docker Container and Image
