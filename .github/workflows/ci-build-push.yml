@@ -64,4 +64,4 @@ jobs:
   run_tests:
     uses: ./.github/workflows/run-tests.yml
     needs: build
-    if: ${{ needs.build.result == 'success' && github.ref == 'refs/heads/development' }}
+    if: ${{ needs.build.result == 'success' && github.ref == 'refs/heads/main' }}
