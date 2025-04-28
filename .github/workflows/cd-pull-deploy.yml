@@ -46,7 +46,15 @@ jobs:
         id: check_nginx
         run: |
           echo "Checking if nginx is running"
-          for i in {1..10}; do curl -I http://localhost:8022 && break || sleep 5; done
+          for i in {1..10}; do 
+            if curl -I http://localhost:8022 > /dev/null; then
+              echo "Nginx is running"
+              break
+            else
+              echo "Waiting for nginx to start..."
+              sleep 5
+            fi
+          done
           curl -I http://localhost:8022
         shell: bash
 
