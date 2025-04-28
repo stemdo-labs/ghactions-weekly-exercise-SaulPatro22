@@ -1,0 +1,15 @@
+name: Run tests
+on: [workflow_dispatch, workflow_call]
+
+jobs:
+  run_tests:
+    runs-on: [self-hosted, virtualbox]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: |
+          echo "Running tests"
+          echo 'npm test -- --watchAll=false --ci --passWithNoTests --testTimeout=10000 --detectOpenHandles --forceExit'
+        shell: bash
