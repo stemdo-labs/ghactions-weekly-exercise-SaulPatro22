@@ -26,7 +26,7 @@ jobs:
         id: get_data
         run: |
           echo "APP_NAME=$(sed -n 's/.*"name": *"\([^"]*\)".*/\1/p' package.json)" >> $GITHUB_OUTPUT
-          if [ "${{ github.base_ref }}" == 'main' ]; then
+          if [ "${{ github.ref_name }}" == 'main' ]; then
             echo "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)-RC" >> $GITHUB_OUTPUT
           else
             echo "VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json)-SNAPSHOT" >> $GITHUB_OUTPUT
