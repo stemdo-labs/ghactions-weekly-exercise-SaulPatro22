@@ -47,7 +47,7 @@ jobs:
         run: |
           echo "Checking if nginx is running"
           for i in {1..10}; do 
-            if curl -I http://localhost:8022 > /dev/null; then
+            if curl -s http://localhost:8022 > /dev/null; then
               echo "Nginx is running"
               break
             else
