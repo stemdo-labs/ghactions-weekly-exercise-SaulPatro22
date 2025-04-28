@@ -5,8 +5,8 @@ jobs:
   run_tests:
     runs-on: [self-hosted, virtualbox]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    #   - name: Checkout repository
+    #     uses: actions/checkout@v4
 
       - name: Run tests
         run: |
