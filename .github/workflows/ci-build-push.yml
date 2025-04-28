@@ -43,6 +43,13 @@ jobs:
           docker push ${{ needs.get_version.outputs.full_tag }}
         shell: bash
 
+      - name: Delete Docker  Image
+        id: delete_container_image
+        run: |
+          echo "Deleting Docker image"
+          docker rmi ${{ needs.get_version.outputs.full_tag }}
+        shell: bash
+
       - name: Logout from Docker
         if: always()
         run: |

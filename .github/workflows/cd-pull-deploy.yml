@@ -39,7 +39,7 @@ jobs:
         id: run_container
         run: |
           echo "Running Docker container with tag: ${{ needs.get_version.outputs.full_tag }}"
-          docker run -d -p 8022:8080 ${{ needs.get_version.outputs.full_tag }}
+          echo "CONTAINER_ID=$(docker run -d -p 8022:8080 ${{ needs.get_version.outputs.full_tag }})" >> $GITHUB_ENV
         shell: bash
 
       - name: Check with curl nginx
@@ -48,6 +48,15 @@ jobs:
           echo "Checking if nginx is running"
           for i in {1..10}; do curl -I http://localhost:8022 && break || sleep 5; done
           curl -I http://localhost:8022
+        shell: bash
+
+      - name: Delete Docker Container and Image
+        id: delete_container_image
+        run: |
+          echo "Deleting Docker container and image"
+          docker stop ${{ env.CONTAINER_ID }}
+          docker rm ${{ env.CONTAINER_ID }}
+          docker rmi ${{ needs.get_version.outputs.full_tag }}
         shell: bash
 
       - name: Logout from Docker
